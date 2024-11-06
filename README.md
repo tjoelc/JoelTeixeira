@@ -6,7 +6,7 @@
   <img src="areas.png" >
 </p>
 
-# Joel Teixeira
+#                                                                  Joel Teixeira
 <sub>*Aprimorando em Ciencia de Dados ...r*</sub>
 
 Sou Joel Campos Teixeira, profissional com 20 anos de experiência em análise de processos produtivos e otimização de desempenho industrial. 
