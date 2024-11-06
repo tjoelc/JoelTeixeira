@@ -5,7 +5,7 @@
   <img src="banner.png" >
   <img src="areas.png" >
 </p>
-
+<p align="center">Joel Teixeira </p>
 # <p aligh='center'>Joel Teixeira </p>
 <sub>*Aprimorando em Ciencia de Dados ...r*</sub>
 
