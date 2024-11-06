@@ -7,7 +7,7 @@
 </p>
 
 # Joel Teixeira
-<sub>*Cientista de Dados Júnior*</sub>
+<sub>*Aprimorando em Ciencia de Dados ...r*</sub>
 
 Sou Joel Campos Teixeira, profissional com 20 anos de experiência em análise de processos produtivos e otimização de desempenho industrial. 
 Atualmente, estou em transição de carreira para a área de Ciência de Dados, cursando um MBA focado em desenvolver competências analíticas e técnicas de gestão de dados. Minha trajetória inclui experiência sólida em controle de produção, qualidade e melhoria contínua, onde apliquei metodologias como Lean Manufacturing e Kaizen para maximizar a eficiência e reduzir custos. Essa jornada me permite trazer uma abordagem prática e orientada a resultados para a ciência de dados, com um olhar atento à análise e interpretação de dados que impactam diretamente a tomada de decisões.
