@@ -1,6 +1,5 @@
 ![Static Badge](https://img.shields.io/badge/Author-Joel%20Teixeira-blue?link=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fjoel-campos-teixeira%2Foverlay%2Fabout-this-profile%2F%3Flipi%3Durn%253Ali%253Apage%253Ad_flagship3_profile_view_base%253B3f27wn6fQ2G%252FbWHt4VXhOA%253D%253D)
 
-[Static Badge](https://img.shields.io/badge/Author-Joel%20Teixeira-blue?link=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fjoel-campos-teixeira%2Foverlay%2Fabout-this-profile%2F%3Flipi%3Durn%253Ali%253Apage%253Ad_flagship3_profile_view_base%253B3f27wn6fQ2G%252FbWHt4VXhOA%253D%253D)
 [![](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/release/python-365/) [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/tjoelc/)
 
 <p align="center">
