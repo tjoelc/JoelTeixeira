@@ -3,7 +3,7 @@
 
 <p align="center">
   <img src="banner.png" >
-  <img src="data_science_areas.png" >
+  <img src="areas.png" >
 </p>
 
 # Joel Teixeira
