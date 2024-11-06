@@ -1,5 +1,5 @@
 @@ -1,36 +1,36 @@
-[![author](https://img.shields.io/badge/author-KarinneCristina-red.svg)](https://www.linkedin.com/in/karinnecristinapereira/) [![](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/release/python-365/) [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/karinnecristina/Data-Science)
+[![author](https://img.shields.io/badge/author-JOEL TEIXEIR-red.svg)](https://www.linkedin.com/in/jcteixeira/) [![](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/release/python-365/) [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/karinnecristina/Data-Science)
 
 <p align="center">
   <img src="banner.png" >
@@ -8,16 +8,15 @@
 
 # Joel Teixeira
 <sub>*Cientista de Dados Júnior*</sub>
-<sub>**Cientista de Dados Júnior**</sub>
 
-Amante do universo Geek, fã de séries sobre hackers e ficção científica e uma Cientista de Dados que adora colocar a mão na massa desde a coleta dos dados sendo eles estruturados ou não até a construção do modelo preditivo ou descritivo. No meu dia a dia uso muito Python e SQL (esse não pode ficar nunca de fora do rolê) mas tenho um conhecimento básico de R, não sou muito boa com visualização de dados (desculpa a sinceridade, mas é verdade) então utilizo algumas ferramentas como Power BI, Data Studio, etc para lidar com esse meu gap. Recentemente tive a oportunidade de trabalhar com dados financeiros e confesso que ainda não sei muita coisa mas tenho a certeza que é esse mundo que eu quero explorar cada dia mais.
+Sou Joel Campos Teixeira, profissional com 30 anos de experiência em análise de processos produtivos e otimização de desempenho industrial. Atualmente, estou em transição de carreira para a área de Ciência de Dados, cursando um MBA focado em desenvolver competências analíticas e técnicas de gestão de dados. Minha trajetória inclui experiência sólida em controle de produção, qualidade e melhoria contínua, onde apliquei metodologias como Lean Manufacturing e Kaizen para maximizar a eficiência e reduzir custos. Essa jornada me permite trazer uma abordagem prática e orientada a resultados para a ciência de dados, com um olhar atento à análise e interpretação de dados que impactam diretamente a tomada de decisões.
 
-**Background in:** Python | SQL | Machine Learning | DataViz.
+**Background in:** Python | SQL | Machine Learning | JAVA
 
 **Links:**
-* [LinkedIn](https://www.linkedin.com/in/karinnecristinapereira/)
-* [Medium](https://medium.com/@KarinneCristina)
-* [Website](https://karinneristina.glitch.me/)
+* [LinkedIn](https://www.linkedin.com/in/jcteixeira/)
+* [Medium](https://medium.com/@)
+  
 
 
 ## Projetos que tive a oportunidade de trabalhar na [Refinaria de Dados](https://refinariadedados.com.br/):
