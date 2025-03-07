@@ -1,3 +1,8 @@
+<div align="center"> <a href="https://github.com/tjoelc/JoelTeixeira"> <img height="180em" src="https://github-readme-stats.vercel.app/api?username=akyla007&show_icons=true&theme=monokai&include_all_commits=true&count_private=true"/> <img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=akyla007&layout=compact&langs_count=7&theme=monokai"/> </div>
+<div align="center">
+  <h1>📊 Joel Teixera</h1>
+
+
 <div align="center" style="margin: 20px 0;">
   <!-- Badges de Tecnologias -->
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
