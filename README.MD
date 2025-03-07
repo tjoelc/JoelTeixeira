@@ -9,12 +9,14 @@
 <hr>
 
 <div>
-  <h2>O que eu faço</h2>
+  <h2>O que eu contribuo para produzir :</h2>
   <ul>
     <li><strong>Análise e Modelagem de Dados:</strong> Desenvolvimento de modelos preditivos e classificatórios para otimizar processos.</li>
-    <li><strong>Visualização de Dados:</strong> Criação de dashboards interativos com Plotly, Matplotlib e Power BI.</li>
+    <li><strong>Visualização de Dados:</strong> Criação de dashboards interativos com Plotly, Matplotlib, Power BI, STREAMLIT</li>
     <li><strong>Engenharia de Dados:</strong> Construção e otimização de pipelines ETL.</li>
-    <li><strong>Projetos Open Source:</strong> Contribuições para bibliotecas como Pandas e Scikit-Learn.</li>
+    <li><strong>Outros:</strong> Contribuições para bibliotecas como Pandas e Scikit-Learn, SciPy, Tensor Flow</li>
+    <li><strong>Projetos Academicos:</strong> Contribuições para bibliotecas como Pandas e Scikit-Learn, SciPy, Tensor Flow</li>
+
   </ul>
 </div>
 
@@ -38,12 +40,12 @@
   <h2>Projetos em Destaque</h2>
   <ul>
       <li>
-        <strong>Análise de Desempenho em Escolas:</strong> Desenvolvi um modelo preditivo que identifica a melhor opção de escola (Masculina, Feminina ou Mista) para o aluno, com base em seu desempenho nas         avaliações.  
-        <strong>🔗 <a href="https://github.com/akyla007/Akyla_Aquino_Desafio" target="_blank">Repositório</a></strong>
+        <strong>projeto 1</strong>   
+        <strong>🔗 <a href="caminho git do projeto, falta subir" target="_blank">Falta subir</a></strong>
       </li>
       <li>
-        <strong>Modelo de Regressão para Previsão de Preços de Apartamentos em Nova York:</strong> Criei um algoritmo de regressão para estimar os preços de apartamentos considerando a região e outras               variáveis, auxiliando na tomada de decisões no mercado imobiliário.  
-        <strong>🔗 <a href="https://github.com/akyla007/Desafio-Lighouse-2" target="_blank">Repositório</a></strong>
+        <strong>projeto 2 </strong>  
+        <strong>🔗 <a href="" target="_blank">falta subir Repositório</a></strong>
       </li>
   </ul>
 </div>
