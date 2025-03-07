@@ -56,10 +56,10 @@
   <h2>Vamos Conectar</h2>
   <p>Estou sempre em busca de novos desafios e oportunidades colaborativas!</p>
   <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
-    <a href="https://www.linkedin.com/in/%C3%A1kyla-aquino-710b39171" target="_blank">
+    <a href="www.linkedin.com/in/joel-campos-teixeira" target="_blank">
       <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
     </a>
-    <a href="mailto:akylaaquino@gmail.com">
+    <a href="mailto:tjoelcampos@gmail.com">
       <img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Gmail" />
     </a>
   </div>
