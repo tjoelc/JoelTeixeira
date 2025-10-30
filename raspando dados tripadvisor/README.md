@@ -1,6 +1,6 @@
 # Aprendendo a extrair informações de uma página web 
 
-Nesse projeto usei o framework scrapy para extrair algumas informações do site Tripadvisor a respeito da **Porto de Galinhas** no ** Rio Grande do Norte** local que pretendo conhecer em breve.
+Nesse projeto usei o framework scrapy para extrair algumas informações do site Tripadvisor a respeito da **Porto de Galinhas** no ** Estado de Pernambuco ** local que pretendo conhecer em breve.
 
 Foram extraídas as seguintes informações:
 
