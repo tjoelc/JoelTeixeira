@@ -5,7 +5,7 @@ from ..items import TripadvisorItem
 class ComentariosSpider(scrapy.Spider):
     name = 'comentarios'
     allowed_domains = ['tripadvisor.com.br']
-    start_urls = ['https://www.tripadvisor.com.br/Attraction_Review-g303297-d4037761-Reviews-Lagoa_do_Paraiso-Jericoacoara_Jijoca_de_Jericoacoara_State_of_Ceara.html#REVIEWS']
+    start_urls = ['https://www.tripadvisor.com.br/ShowForum-g303461-i9540-Porto_de_Galinhas_Ipojuca_State_of_Pernambuco.html#REVIEWS']
 
     def parse(self, response):
         item = TripadvisorItem()
