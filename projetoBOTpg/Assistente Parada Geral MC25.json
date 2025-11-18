@@ -1,0 +1,1343 @@
+{
+  "name": "Assistente Parada Geral MC25",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Assistente Parada Geral\n\n",
+        "height": 80,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        -1168
+      ],
+      "typeVersion": 1,
+      "id": "1e0b4844-3574-4c16-bdf1-c7443c840cff",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- BRANCH 1: STATUS GERAL ---\n// Busca todas as atividades e calcula o progresso total.\n\nconst items = $input.all();\nconst totalAtividades = items.length;\nlet somaPercentual = 0;\nlet concluidas = 0;\nlet emAndamento = 0;\nlet planejadas = 0;\n\nconst chatIdDestino = $('Telegram Trigger1').first().json.message.chat.id;\n\nif (totalAtividades === 0) {\n  return [{ json: { message: 'Nenhuma atividade encontrada na planilha.' } }];\n}\n\nfor (const item of items) {\n  const percentual = item.json.PercentualConcluido || 0;\n  somaPercentual += percentual;\n\n  if (percentual === 100) {\n    concluidas++;\n  } else if (percentual > 0) {\n    emAndamento++;\n  } else {\n    planejadas++;\n  }\n}\n\nconst percentualGeral = (somaPercentual / totalAtividades).toFixed(2);\n\nconst resposta = `📊 *Status Geral da Parada Geral - MC25*\n\n*Progresso Total:* ${percentualGeral}%\n*Atividades Concluídas:* ${concluidas}\n*Atividades em Andamento:* ${emAndamento}\n*Atividades Planejadas:* ${planejadas}\n*Total de Atividades:* ${totalAtividades}`;\n\nreturn [{ json: { message: resposta,\n                chat_id_destino: chatIdDestino\n                } }];"
+      },
+      "id": "de19be97-274e-43b7-8e8c-f8d0b68e11ce",
+      "name": "Code - Calcular Progresso Geral",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        -1056
+      ],
+      "notes": "Calcula o progresso geral com base em todas as atividades."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U",
+          "mode": "list",
+          "cachedResultName": "CRONPG25",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1950978658,
+          "mode": "list",
+          "cachedResultName": "atividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit#gid=1950978658"
+        },
+        "combineFilters": "AND",
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A1:H9000"
+            }
+          }
+        }
+      },
+      "id": "f9d60867-d868-45dc-a981-601254aae811",
+      "name": "Google Sheets - Buscar Todas Atividades",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        576,
+        -1040
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Dak6SYI7p9oeWUGG",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Busca todas as linhas da aba 'Atividades'."
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id_destino }}",
+        "text": "={{ $json.message }}",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboardOptions": {
+          "resize_keyboard": true,
+          "one_time_keyboard": false
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "5e8ba53a-435b-46f2-8b62-5107bea15e89",
+      "name": "Telegram - Enviar Status",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        -992
+      ],
+      "webhookId": "322f1f50-c6dc-4f84-941d-cf441da617b3",
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Envia a resposta do progresso geral."
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- VERSÃO DE DEBUGGING ---\n\n// 1. Log para inspecionar TUDO que está chegando no nó\nconsole.log('Input completo recebido:', JSON.stringify($input.first(), null, 2));\n\n// 2. Tenta pegar o texto da mensagem de várias formas possíveis\nconst item = $input.first();\nconst text = item.json.message?.text || item.json.text;\n\n// 3. Log para ver o que foi extraído como 'text'\nconsole.log('Texto extraído para a variável \"text\":', text);\n\n// 4. Se não houver texto, retorna um ERRO para podermos ver no log de execuções.\nif (!text) {\n    console.error('ERRO: A variável \"text\" está vazia ou indefinida!');\n    return [{ json: { error: 'A mensagem de texto não foi encontrada no input.' } }];\n}\n\n// --- O resto do código continua igual ---\nconst hoje = new Date();\nconst dataHojeFormatada = `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')}`;\n\nconst dataExibicao = text.includes('/hoje') ? dataHojeFormatada : text.replace('/dia', '').trim();\n\nif (!/^\\d{2}\\/\\d{2}$/.test(dataExibicao)) {\n    return [{ json: { error: 'Formato de data inválido. Use /dia DD/MM ou /hoje.' } }];\n}\n\nconst [dia, mes] = dataExibicao.split('/');\nconst ano = new Date().getFullYear();\nconst dataFormatada = `${ano}-${mes}-${dia}`;\n\nreturn [{\n    json: {\n        dataFormatada,\n        dataExibicao\n    }\n}];"
+      },
+      "id": "19d9ecca-cf70-49c0-9a09-0d5bbdc3e300",
+      "name": "Code - Preparar Data (Dia/Hoje)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        -784
+      ],
+      "alwaysOutputData": true,
+      "notes": "Extrai e formata a data do comando /dia ou /hoje."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U",
+          "mode": "list",
+          "cachedResultName": "CRONPG25",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1303259436,
+          "mode": "list",
+          "cachedResultName": "atividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit#gid=1303259436"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "DataInicio",
+              "lookupValue": "={{ $today.format('dd-MM') }}"
+            }
+          ]
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A100:H100"
+            }
+          }
+        }
+      },
+      "id": "4de791d2-f36d-4852-9c98-effc5edad6dc",
+      "name": "Google Sheets - Buscar Atividades do Dia",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        592,
+        -864
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Dak6SYI7p9oeWUGG",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Filtra atividades que ocorrem no dia especificado."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U",
+          "mode": "list",
+          "cachedResultName": "CRONPG25",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1303259436,
+          "mode": "list",
+          "cachedResultName": "atividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit#gid=1303259436"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "DataInicio",
+              "lookupValue": "={{ $today.format('dd-MM') }}"
+            },
+            {
+              "lookupColumn": "Descricao",
+              "lookupValue": "="
+            }
+          ]
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A70:H70"
+            }
+          }
+        }
+      },
+      "id": "03b10cc9-37e1-496b-862e-31ed6f9ade22",
+      "name": "Google Sheets - Buscar Equipe do Dia",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        592,
+        -720
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Dak6SYI7p9oeWUGG",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Filtra a equipe que está trabalhando no dia (não de folga)."
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- COMBINAR E FORMATAR RESPOSTA DO DIA ---\n\nconst atividades = $input.first().json;\nconst equipe = $input.last().json;\nconst dataExibicao = $input.first().json.dataExibicao;\nconst id_destino= $('Telegram Trigger1').first().json.message.chat.id;\n// --- Lógica de Atividades ---\n\nconst totalAtividadesDia = atividades.length;\nlet somaPercentualDia = 0;\n\nif (totalAtividadesDia > 0) {\n  atividades.forEach(item => {\n    somaPercentualDia += item.json.PercentualConcluido || 0;\n  });\n}\n\nconst percentualDia = totalAtividadesDia > 0 ? (somaPercentualDia / totalAtividadesDia).toFixed(2) : 0;\n\n// --- Lógica de Equipes ---\nconst equipePorArea = {};\nif (equipe.length > 0) {\n  equipe.forEach(item => {\n    const area = item.json.Area;\n    const nome = item.json.Nome;\n    if (!equipePorArea[area]) {\n      equipePorArea[area] = [];\n    }\n    equipePorArea[area].push(nome);\n  });\n}\n\nlet mensagemEquipe = \"Ninguém escalado para este dia.\";\nif (Object.keys(equipePorArea).length > 0) {\n  mensagemEquipe = \"\";\n  for (const area in equipePorArea) {\n    mensagemEquipe += `*${area}:*\\n`;\n    equipePorArea[area].forEach(nome => mensagemEquipe += `- ${nome}\\n`);\n    mensagemEquipe += \"\\n\";\n  }\n}\n\nconst resposta = `📅 *Resumo do Dia ${dataExibicao}*\n\\n*Progresso do Dia:* ${percentualDia}%\\n*Atividades do Dia:* ${totalAtividadesDia}\\n\\n---\\n👷 *Equipe Escalada:*\\n\\n${mensagemEquipe}`;\n\nreturn [{ json: { message: resposta,\n                id_Dest: id_destino} }];"
+      },
+      "id": "738f3d73-e86f-4c60-8112-6073b33f9439",
+      "name": "Code - Combinar Resposta Dia",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -816
+      ],
+      "notes": "Une os dados de atividades e equipe para a resposta do dia."
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.id_Dest }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "2a8a4b71-4447-4d0e-a5c4-308ac1365228",
+      "name": "Telegram - Enviar Resumo Dia",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -816
+      ],
+      "webhookId": "627727ee-a1cb-41f5-bae6-f6225ced2f17",
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Envia a resposta combinada do dia."
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- BRANCH 3: ATUALIZAR (GESTOR) ---\n// Valida o comando e extrai ID e percentual.\n\nconst text = $json.message.text;\nconst parts = text.split(' ');\n\nif (parts.length !== 3) {\n  return [{ json: { error: 'Formato inválido! Use: /atualizar [ID] [percentual 0-100]' } }];\n}\n\nconst id = parts[1];\nconst percentual = parseInt(parts[2], 10);\n\nif (isNaN(percentual) || percentual < 0 || percentual > 100) {\n  return [{ json: { error: 'Percentual inválido! Deve ser um número de 0 a 100.' } }];\n}\n\nlet status = 'Planejado';\nif (percentual === 100) {\n  status = 'Concluído';\n} else if (percentual > 0) {\n  status = 'Em Andamento';\n}\n\nreturn [{ json: { id: id, PercentualConcluido: percentual, Status: status } }];"
+      },
+      "id": "5d82ede4-75a5-4ccd-9276-0de5af9f045e",
+      "name": "Code - Validar Comando Atualizar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        -480
+      ],
+      "notes": "Valida a sintaxe do comando /atualizar e extrai os dados."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+              "leftValue": "={{ $json.message.chat.id }}",
+              "rightValue": "1255",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e3b60407-b524-40b5-bdb6-d87853e4c65c",
+      "name": "IF - Verificar Gestor",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -464
+      ],
+      "notes": "Verifica se o usuário que enviou o comando é um gestor autorizado. Substitua '123456789' pelo chat.id real. Para múltiplos IDs, use um nó 'Switch' ou adicione mais condições com 'or'."
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U",
+          "mode": "list",
+          "cachedResultName": "CRONPG25",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1303259436,
+          "mode": "list",
+          "cachedResultName": "atividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit#gid=1303259436"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Id",
+              "displayName": "Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " AREA",
+              "displayName": " AREA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Descricao",
+              "displayName": "Descricao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DuracaoHoras",
+              "displayName": "DuracaoHoras",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DataInicio",
+              "displayName": "DataInicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DataTermino",
+              "displayName": "DataTermino",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Planejado",
+              "displayName": "Planejado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "0,00%",
+              "displayName": "0,00%",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "220cbf66-a6a2-4b58-baa2-966304210b72",
+      "name": "Google Sheets - Atualizar Atividade",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -32,
+        -544
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Dak6SYI7p9oeWUGG",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Atualiza a linha da atividade com o novo percentual e status."
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "✅ Atividade ID {{ $json.id }} atualizada para {{ $json.PercentualConcluido }}% (Status: {{ $json.Status }})",
+        "additionalFields": {}
+      },
+      "id": "e520871f-491b-4c4e-a453-c310db154735",
+      "name": "Telegram - Confirmar Atualização",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        336,
+        -528
+      ],
+      "webhookId": "32c367f2-6147-40dd-9578-78ce91babc7a",
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Envia uma mensagem de sucesso para o gestor."
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "❌ Você não tem permissão para usar este comando.",
+        "additionalFields": {}
+      },
+      "id": "cb17847c-5afd-4085-b56e-c827ad6b9f5e",
+      "name": "Telegram - Negar Acesso",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -304
+      ],
+      "webhookId": "be2f9f7e-24d4-49c0-82fa-e60774631e1c",
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Envia mensagem de negação para usuários não autorizados."
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- BRANCH 4: AREA ---\n// Extrai o nome da área da mensagem.\n\nconst text = $json.message.text;\nconst area = text.replace('/area', '').trim();\n\nif (!area) {\n  return [{ json: { error: 'Formato inválido! Use: /area [nome da área]' } }];\n}\n\nreturn [{ json: { area: area } }];"
+      },
+      "id": "75f67bc1-3951-46c1-aa38-bbf78996b5d8",
+      "name": "Code - Extrair Nome da Área",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        -288
+      ],
+      "alwaysOutputData": true,
+      "notes": "Extrai o nome da área do comando /area."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U",
+          "mode": "list",
+          "cachedResultName": "CRONPG25",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1303259436,
+          "mode": "list",
+          "cachedResultName": "atividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit#gid=1303259436"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A:H"
+            }
+          }
+        }
+      },
+      "id": "2c2038f7-32e1-42a5-ac97-b8db55a5d64c",
+      "name": "Google Sheets - Buscar Atividades por Área",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        592,
+        -368
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Dak6SYI7p9oeWUGG",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Filtra atividades pela área especificada."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U",
+          "mode": "list",
+          "cachedResultName": "CRONPG25",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1303259436,
+          "mode": "list",
+          "cachedResultName": "atividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit#gid=1303259436"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A:H"
+            }
+          }
+        }
+      },
+      "id": "e69767e9-4736-4c64-8ef2-0f0133606ded",
+      "name": "Google Sheets - Buscar Equipe da Área (Hoje)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        592,
+        -208
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Dak6SYI7p9oeWUGG",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Filtra a equipe da área que está trabalhando hoje."
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- COMBINAR E FORMATAR RESPOSTA DA ÁREA ---\n\nconst atividades = $input.first().json;\nconst equipeHoje = $input.last().json;\nconst area = $input.first().json.area;\n\n// --- Lógica de Atividades ---\nlet mensagemAtividades = `*Atividades na área ${area}:*\\n\\n`;\nif (atividades.length === 0) {\n  mensagemAtividades = \"Nenhuma atividade encontrada para esta área.\\n\\n\";\n} else {\n  atividades.forEach(item => {\n    mensagemAtividades += `• ${item.json.Atividade}\\n  Status: ${item.json.Status} (${item.json.PercentualConcluido}%)\\n\\n`;\n  });\n}\n\n// --- Lógica de Equipe ---\nlet mensagemEquipe = `*Equipe de hoje na área ${area}:*\\n\\n`;\nif (equipeHoje.length === 0) {\n  mensagemEquipe = \"Ninguém escalado para esta área hoje.\\n\";\n} else {\n  equipeHoje.forEach(item => mensagemEquipe += `- ${item.json.Nome}\\n`);\n}\n\nconst resposta = `🏗️ *Área: ${area}*\\n\\n${mensagemAtividades}---\\n${mensagemEquipe}`;\n\nreturn [{ json: { message: resposta } }];"
+      },
+      "id": "8826e777-4c35-4ad9-b46d-7ac822d9a172",
+      "name": "Code - Combinar Resposta Área",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -368
+      ],
+      "notes": "Une os dados de atividades e equipe da área para a resposta."
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "cfdf18f3-3ceb-4ff1-b391-5f3b6d936a9a",
+      "name": "Telegram - Enviar Resumo Área",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -272
+      ],
+      "webhookId": "780c66ec-0fb6-4edd-9995-0da407ff758f",
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Envia a resposta da área."
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- BRANCH 5: EQUIPE ---\n// Prepara a data para a busca na aba de Escalas.\n\nconst text = $json.message.text;\nconst dataBusca = text.replace('/equipe', '').trim();\n\nif (!/^\\d{2}\\/\\d{2}$/.test(dataBusca)) {\n    return [{ json: { error: 'Formato de data inválido. Use /equipe DD/MM.' } }];\n}\n\nconst [dia, mes] = dataBusca.split('/');\nconst ano = new Date().getFullYear();\nconst dataFormatada = `${ano}-${mes}-${dia}`;\n\nreturn [{ json: { dataFormatada: dataFormatada, dataExibicao: dataBusca } }];"
+      },
+      "id": "a52de52b-9e50-4477-83d0-85f4a95928c3",
+      "name": "Code - Preparar Data (Equipe)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -80
+      ],
+      "notes": "Extrai e formata a data do comando /equipe."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U",
+          "mode": "list",
+          "cachedResultName": "CRONPG25",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1303259436,
+          "mode": "list",
+          "cachedResultName": "atividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fK6CDxhJG54XC_SC1NzO3oZsKl0u9VzVze_KUqXFg4U/edit#gid=1303259436"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRangeA1",
+              "range": "A:H"
+            }
+          }
+        }
+      },
+      "id": "00b8b53d-16a7-4946-8862-bae0bbed7935",
+      "name": "Google Sheets - Buscar Equipe do Dia (Puro)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        592,
+        -16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Dak6SYI7p9oeWUGG",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Busca a equipe do dia para o comando /equipe."
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- FORMATAR RESPOSTA DA EQUIPE ---\n\nconst equipe = $input.all();\nconst dataExibicao = $input.first().json.dataExibicao;\n\nconst equipePorArea = {};\nif (equipe.length > 0) {\n  equipe.forEach(item => {\n    const area = item.json.Area;\n    const nome = item.json.Nome;\n    if (!equipePorArea[area]) {\n      equipePorArea[area] = [];\n    }\n    equipePorArea[area].push(nome);\n  });\n}\n\nlet mensagemEquipe = `Ninguém escalado para o dia ${dataExibicao}.`;\nif (Object.keys(equipePorArea).length > 0) {\n  mensagemEquipe = `👷 *Equipe Escalada para ${dataExibicao}:*\\n\\n`;\n  for (const area in equipePorArea) {\n    mensagemEquipe += `*${area}:*\\n`;\n    equipePorArea[area].forEach(nome => mensagemEquipe += `- ${nome}\\n`);\n    mensagemEquipe += \"\\n\";\n  }\n}\n\nreturn [{ json: { message: mensagemEquipe } }];"
+      },
+      "id": "2dfc7c40-5b62-4060-9328-504e2457bf75",
+      "name": "Code - Formatar Resposta Equipe",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -16
+      ],
+      "notes": "Formata a lista de pessoal agrupada por área."
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "ae05c6d3-d45a-47fa-9137-599f9dd264ae",
+      "name": "Telegram - Enviar Lista Equipe",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -64
+      ],
+      "webhookId": "5987a3b7-110d-4db5-ab4d-12bd3d3ef30c",
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Envia a lista de equipe do dia."
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "457af716-6606-4e7b-8ef9-da6135d599f6",
+      "name": "Telegram Trigger1",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -800
+      ],
+      "webhookId": "seu_webhook_id_aqui",
+      "notesInFlow": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Inicia o fluxo ao receber uma mensagem no Telegram."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "75f45eb0-45a2-4e27-b5df-c98b5068afdd",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "=/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "944b20b9-ecf7-4304-b963-cc811f280508",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/status",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0d7b1e88-8d27-482c-9925-8b300ef6d553",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": " /progresso",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "87a1d335-b93f-41a6-b798-18ee38d04d7f",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": " /atividades",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "511c74eb-c639-4e0e-bac2-98a472f6756c",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": " /atividade <ID>",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5260a51e-58fe-4f96-9e7a-ffbe14169206",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": " /equipe hoje",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bcd39d0f-e6c7-4edf-8cd5-967b6928fb8c",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": " /hoje",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0fe7b64b-fd9f-4b62-b60f-dcfaca82f077",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": " /area SECADOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8af24d78-7f62-40fc-a5b9-6147d0138b4a",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": " /area PARTE UMIDA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7cbcc31a-5e6b-468d-b6be-ddcef98bb68e",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": " /area  TANCAGEM",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": 0
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -144,
+        -928
+      ],
+      "id": "03be8cd4-9607-419d-b1a2-471eeec46bf0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "=\"Ola sou seu agente de acompanhamento da Parada Geral MC25\nUse os comandos:\n/start\n/status\n/progresso\n/hoje\n/atividade<id>\n\n/Area MC25.SECADOR\n/Area MC25.CORTADEIRA\n/Area MC25.PARTE ÚMIDA\n\"",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "/status",
+                    "additionalFields": {
+                      "request_contact": false
+                    }
+                  },
+                  {
+                    "text": "={{ $json.message.text }}",
+                    "additionalFields": {
+                      "request_location": false
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {
+          "resize_keyboard": true,
+          "one_time_keyboard": true,
+          "selective": true
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "reply_to_message_id": "={{ $json.message.from.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        -1040
+      ],
+      "id": "e7ba11ed-7afb-4ffa-95df-e5c2e5b1a361",
+      "name": "Send a text message",
+      "webhookId": "c0d0b0e0-6bc9-4b04-9bae-8dcb870b7c54",
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.result.chat.id }}",
+        "messageId": "={{ $json.result.message_id }}",
+        "text": "texto vazio",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1072,
+        -544
+      ],
+      "id": "ad92c3d5-b24d-4386-9f09-c4047e303f68",
+      "name": "Edit a text message",
+      "webhookId": "dcacaab5-5135-4c3c-961a-7922f123f416",
+      "credentials": {
+        "telegramApi": {
+          "id": "URJSUVqW31qyp3K3",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets - Buscar Todas Atividades": {
+      "main": [
+        [
+          {
+            "node": "Code - Calcular Progresso Geral",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Calcular Progresso Geral": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Enviar Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Preparar Data (Dia/Hoje)": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Buscar Atividades do Dia",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets - Buscar Equipe do Dia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Buscar Atividades do Dia": {
+      "main": [
+        [
+          {
+            "node": "Code - Combinar Resposta Dia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Combinar Resposta Dia": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Enviar Resumo Dia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Validar Comando Atualizar": {
+      "main": [
+        [
+          {
+            "node": "IF - Verificar Gestor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Verificar Gestor": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Atualizar Atividade",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram - Negar Acesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Atualizar Atividade": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Confirmar Atualização",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Extrair Nome da Área": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Buscar Atividades por Área",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets - Buscar Equipe da Área (Hoje)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Buscar Atividades por Área": {
+      "main": [
+        [
+          {
+            "node": "Code - Combinar Resposta Área",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Combinar Resposta Área": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Enviar Resumo Área",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Preparar Data (Equipe)": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Buscar Equipe do Dia (Puro)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Buscar Equipe do Dia (Puro)": {
+      "main": [
+        [
+          {
+            "node": "Code - Formatar Resposta Equipe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Formatar Resposta Equipe": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Enviar Lista Equipe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Buscar Equipe da Área (Hoje)": {
+      "main": [
+        [
+          {
+            "node": "Code - Combinar Resposta Área",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Buscar Equipe do Dia": {
+      "main": [
+        [
+          {
+            "node": "Code - Combinar Resposta Dia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets - Buscar Todas Atividades",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets - Buscar Todas Atividades",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code - Preparar Data (Dia/Hoje)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [],
+        [],
+        [
+          {
+            "node": "Code - Extrair Nome da Área",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code - Extrair Nome da Área",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code - Extrair Nome da Área",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Edit a text message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "784106e0-39eb-426a-a0eb-3de0e78cdcd3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c60404a377f166094d2528c63587331c504715c17a73f0793439dd8c713b199c"
+  },
+  "id": "DsPScinH5Q5IMceX",
+  "tags": []
+}
