@@ -13,7 +13,7 @@ Foram extraídas as seguintes informações:
 
 <img src="Image/coment.png" >
 
-**Ferramentas utilizadas:**
+**Ferramenta utilizadas:**
 - Python 3 
 - Scrapy
 
